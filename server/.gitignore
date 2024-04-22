@@ -1,0 +1,43 @@
+# Dependency directories
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Environment variables
+.env
+
+# IDE and editor files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+
+# Logs and build artifacts
+logs/
+build/
+
+# Database file
+*.db
+
+# SQLite database file specifically
+app.db
+
+# macOS specific files
+.DS_Store
+
+# Windows specific files
+Thumbs.db
+
+# Compiled binary files
+*.o
+*.out
+*.exe
+
+# Local configuration files
+*~
+
+# Ignore environment specific files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
