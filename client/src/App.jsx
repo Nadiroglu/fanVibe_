@@ -1,33 +1,71 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from 'react'
+import { Outlet, useNavigate } from 'react-router-dom'
+import Footer from './components/Footer'
+import NavBar from './components/NavBar'
+import FanClubCategories from './components/FanClubCategories'
+
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [user, setUser] = useState(null)
+  const [fanclub, setFanClub] = useState([])
+  const [search, setSearch] = useState('')
+  
+  console.log(user);
+
+    useEffect(() => {
+      const fetchData = async() => {
+        try {
+          const response = await fetch('/api/fan_clubs')
+
+          if (!response.ok){
+            throw new Error('Failed to fetch data')
+          }
+          const data = await response.json()
+          // console.log(data);
+          setFanClub(data)
+        } catch(error) {
+          console.error('Error fetching data:', error.message);
+        }
+      }
+      fetchData()
+    }, [])
+
+
+    const filteredClubs = fanclub.filter((club) => {
+      return (
+        club.sport_type.toLowerCase().includes(search.toLowerCase()) ||
+        club.name.toLowerCase().includes(search.toLowerCase())
+      )
+    })
+  
+
+
+
+  useEffect(() => {
+    fetch('/api/check_session', {
+      method: 'GET',
+      credentials: 'include'
+    }).then((res) => {
+      if (res.ok) {
+        res.json().then((user) => setUser(user))
+      }
+    })
+
+  }, [])
+
+
+
 
   return (
+    
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    <h1 className="text-3xl font-bold underline text-red-500">
+      Hello world!
+    </h1>
+      <NavBar search={search} setSearch={setSearch} user = {user}/> 
+      <Outlet context={[user]} />
+      <FanClubCategories filteredClubs={filteredClubs} />
+      <Footer />
     </>
   )
 }
