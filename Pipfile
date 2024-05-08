@@ -16,6 +16,8 @@ flask-sqlalchemy = "*"
 flask-cors = "*"
 python-dotenv = "*"
 stripe = "*"
+flask-socketio = "*"
+flask-login = "*"
 
 [dev-packages]
 

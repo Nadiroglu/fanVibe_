@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData
+from sqlalchemy import MetaData, func
 from sqlalchemy.orm import validates
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy_serializer import SerializerMixin
@@ -28,12 +28,19 @@ class User(db.Model, SerializerMixin):
     first_name = db.Column(db.String(50))
     last_name = db.Column(db.String(50))
     prof_pic_url = db.Column(db.String(255))
-    role = db.Column(db.String, default = 'User')
 
 
-    club_members = db.relationship("ClubMembers", back_populates = "admin")
+    club_members = db.relationship("ClubMembers", back_populates = "user")
     fan_clubs = association_proxy("club_members", "fanclub")
-    serialize_rules = ("-club_members.admin",)
+    posts = db.relationship('Posts', back_populates = 'user')
+    comments = db.relationship('Comments', back_populates = 'user')
+    membership_requests = db.relationship("MembershipRequest", back_populates="user")
+    requests = association_proxy('membership_requests', 'fanclub')
+    inboxes = db.relationship('Participants', back_populates='user')
+    replies = db.relationship('CommentReplies', back_populates = 'user')
+
+    serialize_rules = ("-club_members", '-comments', '-posts', '-membership_requests', '-requests', '-inboxes.user', '-replies') 
+
 
 
     @validates('username')
@@ -74,12 +81,31 @@ class User(db.Model, SerializerMixin):
 
 class ClubMembers(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key = True)
-    admin_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id')) 
     fanclub_id = db.Column(db.Integer, db.ForeignKey('fanclubs.id'))
+    isAdmin = db.Column(db.Boolean, default = False)
 
-    admin = db.relationship("User", back_populates = "club_members")
+    user = db.relationship("User", back_populates = "club_members") 
     fanclub = db.relationship("FanClub", back_populates = "club_members")
-    serialize_rules =('admin.club_members', 'fanclub.club_members')
+
+
+    serialize_rules = ('-fanclub', '-user._password_hash', 'isAdmin') 
+
+
+
+class MembershipRequest(db.Model, SerializerMixin):
+    __tablename__ = 'membership_requests'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    fanclub_id = db.Column(db.Integer, db.ForeignKey('fanclubs.id'))
+    status = db.Column(db.String(20), default='Pending')  # Pending, Accepted, Denied
+
+    user = db.relationship("User", back_populates="membership_requests")
+    fanclub = db.relationship("FanClub", back_populates="membership_requests")
+
+    serialize_rules = ('-user', '-fanclub')
+
+
 
 
 
@@ -98,13 +124,115 @@ class FanClub(db.Model, SerializerMixin):
     facebook_url = db.Column(db.String(255))  
     instagram_url = db.Column(db.String(255))
     twitter_url = db.Column(db.String(255)) 
-    member_count = db.Column(db.Integer, default=0) 
+    member_count = db.Column(db.Integer, default=0)
 
 
     club_members = db.relationship("ClubMembers", back_populates = "fanclub")
-    admins = association_proxy("club_members", "admin")
-    serialize_rules = ("club_members.fanclub", )
+    users = association_proxy("club_members", "user")
+    posts = db.relationship('Posts', back_populates = 'fanclub')
+    membership_requests = db.relationship("MembershipRequest", back_populates="fanclub")
+    requests = association_proxy('membership_requests', 'user')
 
+    serialize_rules = ("-club_members.fanclub", '-posts.fanclub', '-admins', '-membership_requests.fanclub')
+
+
+
+class Posts(db.Model, SerializerMixin):
+
+    __tablename__ = 'posts'
+
+    id = db.Column(db.Integer, primary_key = True)
+    content = db.Column(db.String, nullable = False)
+    post_img = db.Column(db.String)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    club_id = db.Column(db.Integer, db.ForeignKey('fanclubs.id'))
+
+    user = db.relationship('User', back_populates = 'posts')
+    fanclub = db.relationship('FanClub', back_populates = 'posts')
+    comments = db.relationship('Comments', back_populates = 'post')
+    serialize_rules = ('-user.posts', '-fanclub.posts', '-comments.post', '-user', '-user._password_hash')
+
+
+class Comments(db.Model, SerializerMixin):
+
+    __tablename__ = 'comments'
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=db.func.now())
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+
+    user = db.relationship("User", back_populates="comments")
+    post = db.relationship("Posts", back_populates="comments")
+    replies = db.relationship('CommentReplies', back_populates = 'comment')
+
+
+    serialize_rules=('-post.comments', '-user')
+
+
+class CommentReplies(db.Model, SerializerMixin):
+    __tablename__ = 'comment_replies'
+
+    id = db.Column(db.Integer, primary_key = True)
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=db.func.now())
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    comment_id = db.Column(db.Integer, db.ForeignKey('comments.id'))
+
+    user = db.relationship("User", back_populates = "replies")
+    comment = db.relationship('Comments', back_populates = 'replies')
+
+    serialize_rules = ('-replies', '-comment')
+
+
+
+# class Like(db.Model, SerializerMixin):
+#     __tablename__ = 'likes'
+#     id = db.Column(db.Integer, primary_key=True)
+#     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+#     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+
+
+class Inbox(db.Model, SerializerMixin):
+    __tablename__ = 'inbox'
+    id = db.Column(db.Integer, primary_key=True)
+    last_message = db.Column(db.String(255))
+    last_message_time = db.Column(db.DateTime)
+    
+    # Relationship to Participants
+    participants = db.relationship('Participants', back_populates='inbox')
+    # Relationship to Messages
+    messages = db.relationship('Message', back_populates='inbox')
+    
+    serialize_rules = ('-participants', '-messages.inbox')
+
+class Participants(db.Model, SerializerMixin):
+    __tablename__ = 'participants'
+    id = db.Column(db.Integer, primary_key=True)
+    inbox_id = db.Column(db.Integer, db.ForeignKey('inbox.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    
+    # Define relationship properties
+    user = db.relationship('User', back_populates='inboxes')
+    inbox = db.relationship('Inbox', back_populates='participants')
+    # serialize_rules = ('-user', '-inbox')
+
+
+class Message(db.Model, SerializerMixin):
+    __tablename__ = 'messages'
+    id = db.Column(db.Integer, primary_key=True)
+    inbox_id = db.Column(db.Integer, db.ForeignKey('inbox.id'), nullable=False)
+    sender_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    receiver_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    message_content = db.Column(db.Text, nullable=False)
+    datetime = db.Column(db.DateTime, nullable=False, default=func.now())  # Default value set to current timestamp
+    
+    # Define relationship properties
+    sender = db.relationship('User', foreign_keys=[sender_id])
+    receiver = db.relationship('User', foreign_keys=[receiver_id])
+    inbox = db.relationship('Inbox', back_populates='messages')
+
+    serialize_rules = ('-sender', '-receiver', '-inbox')
 
 
 

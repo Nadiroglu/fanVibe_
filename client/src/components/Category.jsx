@@ -1,14 +1,15 @@
 import React from 'react'
-import FanClubList from './FanClubList'
+import FanClubList2 from './FanClubList'
 
-const Category = ({sportType, clubs}) => {
+const Category = ({sportType, clubs, user}) => {
 
 
   return (
-    <div className='category'>
-        <h2 className='category-heading'>{sportType}</h2>
-        <FanClubList clubs={clubs} />
+    <div className='category bg-sky-white h-auto text-center '>
+        <h2 className='mt-4 text-2xl font-bold tracking-tight dark:text-sky-900 dark:text-blue'>{sportType.toUpperCase()} FanClubs</h2>
+        <FanClubList2 clubs={clubs} user={user} />
     </div>
+
   )
 }
 

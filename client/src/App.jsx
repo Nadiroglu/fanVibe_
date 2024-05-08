@@ -1,16 +1,14 @@
+import React from 'react'
 import { useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import Footer from './components/Footer'
 import NavBar from './components/NavBar'
-import FanClubCategories from './components/FanClubCategories'
-
 
 function App() {
   const [user, setUser] = useState(null)
   const [fanclub, setFanClub] = useState([])
   const [search, setSearch] = useState('')
-  
-  console.log(user);
+
 
     useEffect(() => {
       const fetchData = async() => {
@@ -29,6 +27,7 @@ function App() {
       }
       fetchData()
     }, [])
+
 
 
     const filteredClubs = fanclub.filter((club) => {
@@ -50,21 +49,13 @@ function App() {
         res.json().then((user) => setUser(user))
       }
     })
-
   }, [])
-
-
-
 
   return (
     
     <>
-    <h1 className="text-3xl font-bold underline text-red-500">
-      Hello world!
-    </h1>
       <NavBar search={search} setSearch={setSearch} user = {user}/> 
-      <Outlet context={[user]} />
-      <FanClubCategories filteredClubs={filteredClubs} />
+      <Outlet context={[user, filteredClubs]} />
       <Footer />
     </>
   )
