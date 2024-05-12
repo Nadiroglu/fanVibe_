@@ -28,6 +28,7 @@ const CommentReplies = ({replies, comment}) => {
             }
             console.log('Reply added');
             setContent('')
+            window.location.reload()
             
         } catch (error) {
             console.error('Error occured', error);

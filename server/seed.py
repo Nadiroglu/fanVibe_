@@ -17,6 +17,7 @@ with app.app_context():
     db.session.query(Participants).delete()
     db.session.query(CommentReplies).delete()
     db.session.query(Message).delete()
+    db.session.query(ClubMembers).delete()
 
 
     print('Creating Users')

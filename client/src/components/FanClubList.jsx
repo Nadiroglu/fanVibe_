@@ -49,7 +49,7 @@ const FanClubList2 = ({ clubs, user }) => {
 
   return (
     <>
-        <div className="overflow-x-auto whitespace-nowrap pe-8">
+        <div className="mt-3 overflow-x-auto whitespace-nowrap transition duration-150 ease-in-out pe-8">
           {clubs.map((club) => {
             const isMember = user && club.club_members.some(member => member.user_id === user.id);
             return (
@@ -60,7 +60,7 @@ const FanClubList2 = ({ clubs, user }) => {
                 onMouseLeave={() => setHoveredClub(null)}
               >
                 
-                <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                <div className="max-w-sm bg-white border border-amber- rounded-lg shadow bg-transparent bg-gradient-to-tr from-[#751565] to-[#5f5606]">
                   {isMember ? (
                     <NavLink to={`/fanclubs/${club.id}`}>
                       <img
@@ -79,11 +79,11 @@ const FanClubList2 = ({ clubs, user }) => {
                     </button>
                   )}
                   <div className="p-5">
-                    <h3 className="mb-2 text-lg font-bold tracking-tight text-gray-900 dark:text-white">
+                    <h3 className="mb-2 text-lg font-bold tracking-tight text-gray-900 dark:text-pink-50">
                       {club.name}
                     </h3>
                     {hoveredClub === club.id && (
-                      <div className="max-w-sm bg-white  rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                      <div className="max-w-sm bg-white rounded-lg shadow dark:bg-Fuchsia-300 dark:border-white-700">
                         <svg
                           className="w-`0 h-10 mr-1 fill-current text-white"
                           xmlns="http://www.w3.org/2000/svg"
@@ -93,6 +93,9 @@ const FanClubList2 = ({ clubs, user }) => {
                         </svg>
                         <p className="mb-8 font-normal text-gray-700 dark:text-gray-400 text-wrap">
                           {club.description}
+                        </p>
+                        <p className="mb-8 font-normal text-gray-700 dark:text-gray-400 text-wrap">
+                          {club.location}
                         </p>
                       </div>
                     )}

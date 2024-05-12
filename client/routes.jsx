@@ -4,7 +4,6 @@ import Logout from "./src/components/Logout";
 import Signup from "./src/components/Signup";
 import Login from "./src/components/Login";
 import Landing from "./src/components/Landing";
-import MembershipRequestForm from "./src/components/MembershipRequestForm";
 import UserProfile from "./src/components/UserProfile";
 import ChangePassword from "./src/components/ChangePassword";
 import AdminDashboard from "./src/components/AdminDashboard";
@@ -48,15 +47,12 @@ const routes = [
         element: <ChangePassword />
       },
       {
-        path: '/fanclubs/:id/membership',
-        element: <MembershipRequestForm />
-      },
+        path: '/login',
+        element: <Login />
+      }
     ]
   },
-  {
-    path: '/login',
-    element: <Login />
-  }
+  
 ];
 
 export default routes;

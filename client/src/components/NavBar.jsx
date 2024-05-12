@@ -3,10 +3,10 @@ import { NavLink } from 'react-router-dom';
 
 const NavBar = ({ user }) => {
   return (
-    <nav className="bg-gray-800 text-white p-4 flex justify-between items-center">
+    <nav className=" text-lime-600 p-4 flex justify-between items-center bg-gradient-to-tr from-[#bcd4d3] to-[rgb(41,197,145)">
       {/* Logo */}
       <NavLink to='/' className="text-xl font-bold uppercase text-blue-400 hover:text-blue-300">
-        Fan VIBE
+        <img className="w-20 h-20 rounded-full" src='/logo.png'/>
       </NavLink>
 
       {/* Navigation Links */}
@@ -15,7 +15,7 @@ const NavBar = ({ user }) => {
         {user ? (
           <NavLink
             to="/logout"
-            className="mr-4 text-sm font-medium hover:text-gray-300"
+            className="mr-4 text-lg font-medium hover:text-indigo-900"
           >
             Logout
           </NavLink>
@@ -23,13 +23,13 @@ const NavBar = ({ user }) => {
           <>
             <NavLink
               to="/login"
-              className="mr-4 text-sm font-medium hover:text-gray-300"
+              className="mr-4 text-lg font-medium hover:text-indigo-800"
             >
               Login
             </NavLink>
             <NavLink
               to="/signup"
-              className="text-sm font-medium hover:text-gray-300"
+              className="text-lg font-medium hover:text-indigo-800"
             >
               Signup
             </NavLink>

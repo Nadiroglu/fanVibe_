@@ -35,7 +35,7 @@ const PostCompo = ({posts}) => {
                 {post.content}
             </p>
 
-        <img className='mt-5 ml-14 h-auto max-w-lg transition-all duration-300 rounded-lg cursor-pointer filter grayscale hover:grayscale-0' src={`/${post.post_img}`}/>
+        <img className='mt-5 ml-4 h-auto max-w-lg transition-all duration-300 rounded-lg cursor-pointer filter grayscale hover:grayscale-0' src={`/${post.post_img}`}/>
     <div className="flex">
         <div className="w-full">
             <div className="flex items-center">

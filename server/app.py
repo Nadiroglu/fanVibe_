@@ -75,6 +75,7 @@ def signup():
     db.session.add(new_user)
     db.session.commit()
 
+    
     new_participant = Participants(user_id=new_user.id, inbox_id = new_user.id)
     db.session.add(new_participant)
     db.session.commit()
@@ -290,6 +291,7 @@ def handle_message(data):
     if sender_id:
         sender_user = db.session.get(User, sender_id)
         receiver_user = db.session.get(User, receiver_id)
+        # receiver_user = db.session.get(User, receiver_user)
         print("Sender ID obtained from session:", sender_id)
         sender_user = db.session.get(User, sender_id)
         if sender_user:
@@ -302,6 +304,8 @@ def handle_message(data):
                     print("Sender inbox ID:", sender_inbox_id)
                     
                     receiver_participant = Participants.query.filter_by(user_id=receiver_id).first()
+                    # receiver_participant = Participants.query.filter_by(receiver=receiver_id.username).first()
+                    print(receiver_participant)
                     if receiver_participant:
                         receiver_inbox_id = receiver_participant.inbox_id
                         print("Receiver inbox ID:", receiver_inbox_id)
@@ -346,35 +350,77 @@ def handle_message(data):
         emit('error_message', {'error': 'Sender ID is not available in session'})
 
 
-
-@app.route('/api/inbox', methods = [ 'GET'])
+@app.route('/api/inbox', methods=['GET'])
 def get_inbox():
     user_id = session.get('user_id')
 
     if not user_id:
         return jsonify({"error": "User not logged in"}), 401
-    
+
     participant = Participants.query.filter_by(user_id=user_id).first()
 
     if not participant:
         return jsonify({"error": "Participant not found"}), 401
-    
+
     inbox = participant.inbox
-    
 
     if not inbox:
         return jsonify({"error": "Inbox not found"}), 401
+
+    # Fetch messages where the user is the sender or the receiver
+    sent_messages = Message.query.filter_by(sender_id=user_id).all()
+    received_messages = Message.query.filter_by(receiver_id=user_id).all()
+
+    message_details = []
+
+    # Process sent messages
+    for message in sent_messages:
+        message_details.append({
+            "sender_id": user_id,
+            "sender_username": participant.user.username,
+            "sender_profpic": message.sender.prof_pic_url,
+            "message": message.message_content
+        })
+
+    # Process received messages
+    for message in received_messages:
+        message_details.append({
+            "sender_id": message.sender_id,
+            "sender_username": message.sender.username,
+            "sender_profpic": message.sender.prof_pic_url,
+            "message": message.message_content
+        })
+
+    return jsonify({"messages": message_details}), 200
+
+# @app.route('/api/inbox', methods = [ 'GET'])
+# def get_inbox():
+#     user_id = session.get('user_id')
+
+#     if not user_id:
+#         return jsonify({"error": "User not logged in"}), 401
     
-    participants = inbox.participants
-    participant_ids = [participant.user.id for participant in participants]
+#     participant = Participants.query.filter_by(user_id=user_id).first()
 
-    users = User.query.filter(User.id.in_(participant_ids)).all()
-    user_details = [{"id": user.id, "username": user.username} for user in users]
+#     if not participant:
+#         return jsonify({"error": "Participant not found"}), 401
+    
+#     inbox = participant.inbox
+    
 
-    messages = Message.query.filter_by(inbox_id = inbox.id).all()
-    message_details = [{"sender_id": message.sender_id, "sender_username": message.sender.username, "message": message.message_content} for message in messages]
+#     if not inbox:
+#         return jsonify({"error": "Inbox not found"}), 401
+    
+#     participants = inbox.participants
+#     participant_ids = [participant.user.id for participant in participants]
 
-    return jsonify({"inbox": user_details, "messages": message_details}), 200
+#     users = User.query.filter(User.id.in_(participant_ids)).all()
+#     user_details = [{"id": user.id, "username": user.username} for user in users]
+
+#     messages = Message.query.filter_by(inbox_id = inbox.id).all()
+#     message_details = [{"sender_id": message.sender_id, "sender_username": message.sender.username, "sender_profpic": message.sender.prof_pic_url,  "message": message.message_content} for message in messages]
+
+#     return jsonify({"inbox": user_details, "messages": message_details}), 200
 
 
 

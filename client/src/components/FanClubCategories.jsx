@@ -19,7 +19,7 @@ const FanClubCategories = ({filteredClubs, user}) => {
     });
   
     return (
-      <div className="club-categories">
+      <div className="club-categories bg-transparent bg-gradient-to-tr from-[#eec0e5] to-[#c2f0ef] ">
         {/* Object.entries(groupedClubs) converts the groupedClubs object into an array of key-value pairs, where each pair represents a sport_type and its corresponding array of FanClub objects. */}
         {Object.entries(groupedFanClubs).map(([sportType, clubsInCategory]) => (
             // Here, entries will be an array of arrays where each inner array contains a key-value pair from groupedFanClubs.

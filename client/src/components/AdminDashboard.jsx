@@ -58,19 +58,35 @@ const AdminDashboard = () => {
 
 
   return (
-    <div>
-        I will fetch my notifications here soon
-        <ul>
-                {notifications && notifications.map(notification => (
-                    <li key={notification.id}>
-                         Fanclub ID: {notification.fanclub_id}, Username: {notification.request_username}
-                        <br/>
-                        <button onClick={() => respondToRequest(notification.id, 'accept')}>Accept</button>
-                        <br/>
-                        <button onClick={() => respondToRequest(notification.id, 'deny')}>Deny</button>
-                    </li>
-                ))}
-            </ul>
+    <div className="container mx-auto p-8">
+      <h1 className="text-3xl font-semibold mb-4">Admin Dashboard</h1>
+      <div>
+        <h2 className="text-xl font-semibold mb-2">Notifications:</h2>
+        <ul className="space-y-4">
+          {notifications.map((notification) => (
+            <li key={notification.id} className="border p-4 rounded-lg">
+              <div>
+                <p className="text-lg">Fanclub ID: {notification.fanclub_id}</p>
+                <p className="text-lg">Username: {notification.request_username}</p>
+              </div>
+              <div className="mt-4">
+                <button
+                  onClick={() => respondToRequest(notification.id, 'accept')}
+                  className="bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded-md mr-2"
+                >
+                  Accept
+                </button>
+                <button
+                  onClick={() => respondToRequest(notification.id, 'deny')}
+                  className="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-md"
+                >
+                  Deny
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   )
 }

@@ -41,8 +41,8 @@ const TestLand = ({posts, fanclub, fanclubId}) => {
       })
         
       if (response.ok) {
-        console.log('Post created successfully');
         window.location.reload()
+        console.log('Post created successfully');
         // Optionally, you can do something after successfully creating the post, like refreshing the page
       } else {
         console.error('Failed to create post');
@@ -57,7 +57,7 @@ const TestLand = ({posts, fanclub, fanclubId}) => {
 
 
   return (
-    <div className="bg-gradient-to-b from-red-100 to-gray-300 min-h-screen">
+    <div className="bg-gradient-to-tr from-[#62abaa] to-[rgb(41,197,145) min-h-screen">
         <div className="flex">
             {/* <!--left menu--> */}
             {/* <div className="h-screen sticky top-0"> */}

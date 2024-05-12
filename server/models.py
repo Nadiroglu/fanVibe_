@@ -204,7 +204,7 @@ class Inbox(db.Model, SerializerMixin):
     # Relationship to Messages
     messages = db.relationship('Message', back_populates='inbox')
     
-    serialize_rules = ('-participants', '-messages.inbox')
+    serialize_rules = ('-participants.inbox', '-messages.inbox')
 
 class Participants(db.Model, SerializerMixin):
     __tablename__ = 'participants'
@@ -216,6 +216,7 @@ class Participants(db.Model, SerializerMixin):
     user = db.relationship('User', back_populates='inboxes')
     inbox = db.relationship('Inbox', back_populates='participants')
     # serialize_rules = ('-user', '-inbox')
+    serialize_rules = ('-inbox.participants', )
 
 
 class Message(db.Model, SerializerMixin):
