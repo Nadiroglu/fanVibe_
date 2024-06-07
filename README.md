@@ -1,4 +1,4 @@
-# FlatEvent and Event Ticketing Website
+# FanVIBE
 
 Think about a social media page where there people who likes the same sports club as you do and i did it by using React for the frontend and Flask for the backend.
 
@@ -15,7 +15,8 @@ Each User has their Hashed and Saved, login information.
 - React: A JavaScript library for building user interfaces.
 - Flask: A lightweight web framework for Python.
 - SQLite: A relational database management system used for data storage.
-- Stripe Payment: Stripe development tools
+- Tailwind CSS - Desiging framework
+- Socket.io - WebSocket for real time connections
 
 
 ## `Installing dependencies` Example
